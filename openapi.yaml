@@ -1,0 +1,74 @@
+openapi: 3.1.0
+
+info:
+  title: Singpods Ops API
+  description: Proxy API for external integrations to the Singpods ecosystem.
+  version: 1.0.0
+  contact:
+    name: Singpods
+    url: https://www.singpods.com/
+    email: hello@singpods.com
+
+tags:
+  - name: locations
+    description: Location operations
+  - name: bookings
+    description: Booking operations
+
+servers:
+  - url: https://ops.singpods.com/api/1.0.0
+    description: Singpods Production API
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+security:
+  - BearerAuth: []
+
+theme:
+  openapi:
+    disableSearch: true
+    expandResponses: 200,202
+    jsonSampleExpandLevel: 1
+
+    theme:
+      sidebar:
+        backgroundColor: '#eae0cc'
+        textColor: '#3d005b'
+      colors:
+        primary:
+          main: '#660099'
+      typography:
+        fontSize: 14pt
+        headings:
+          fontWeight: bold
+
+paths:
+  "/locations":
+    get:
+      tags: ["locations"]
+      summary: Returns all rentors locations
+      description: Get all singpod locations available for the authenticated rentor.
+      operationId: getLocations
+  "/locations/{id}":
+    get:
+      tags: ["locations"]
+      summary: Returns location by give ID
+      description: Get a single singpod location available for the authenticated rentor, based on the id given.
+      operationId: getLocation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+  "/bookings":
+    post:
+      tags: ["bookings"]
+      summary: Creates a booking and returns the pin code
+      description: Create a booking based on a location and recieve the pincode for the session in return.
+      operationId: createBooking
+
