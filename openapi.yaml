@@ -78,7 +78,7 @@ paths:
   "/bookings":
     post:
       tags: ["bookings"]
-      summary: Creates a booking and returns the pin code
+      summary: Create a booking
       description: Create a booking based on a location and recieve the pincode for the session in return.
       operationId: createBooking
       requestBody:
@@ -89,7 +89,7 @@ paths:
               $ref: "#/components/schemas/createBookingRequest"
             examples:
               Successful:
-                summary: Lorem Ipsum
+                summary: Successful Request
                 value: {
                   "locationId": "54f11c47-9f7c-4891-9b9e-8ff1aaaa6d40",
                   "podId": "3dffc4f-182a-4826-956e-f2ba89137350",
