@@ -1,9 +1,9 @@
 openapi: 3.1.0
 
 info:
-  title: Singpods Ops API
+  title: Singpods Ops API BETA
   description: Proxy API for external integrations to the Singpods ecosystem.
-  version: 1.0.0
+  version: 0.1.0
   contact:
     name: Singpods
     url: https://www.singpods.com/
@@ -24,27 +24,16 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+  schemas:
+    booking:
+      type: object
+      properties:
+        locationId:
+          type: string
+          description: ID of the location
 
 security:
   - BearerAuth: []
-
-theme:
-  openapi:
-    disableSearch: true
-    expandResponses: 200,202
-    jsonSampleExpandLevel: 1
-
-    theme:
-      sidebar:
-        backgroundColor: '#eae0cc'
-        textColor: '#3d005b'
-      colors:
-        primary:
-          main: '#660099'
-      typography:
-        fontSize: 14pt
-        headings:
-          fontWeight: bold
 
 paths:
   "/locations":
@@ -71,4 +60,8 @@ paths:
       summary: Creates a booking and returns the pin code
       description: Create a booking based on a location and recieve the pincode for the session in return.
       operationId: createBooking
-
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/booking"
