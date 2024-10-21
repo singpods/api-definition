@@ -31,6 +31,21 @@ components:
         locationId:
           type: string
           description: ID of the location
+        podId:
+          type: string
+          description: ID of the pod
+        startDate:
+          type: string
+          description: "Datetime to start the session [format: ISO 8601]"
+        endDate:
+          type: string
+          description: "Datetime to start the session [format: ISO 8601]"
+        customerEmail:
+          type: string
+          description: Email of the customer booking
+        customerName:
+          type: string
+          description: Name of the customer booking
 
 security:
   - BearerAuth: []
@@ -65,3 +80,4 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/booking"
+     
