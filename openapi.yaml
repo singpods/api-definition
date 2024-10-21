@@ -46,6 +46,13 @@ components:
         customerName:
           type: string
           description: Name of the customer booking
+    bookingExample:
+      locationId: 54f11c47-9f7c-4891-9b9e-8ff1aaaa6d40
+      podId: 03dffc4f-182a-4826-956e-f2ba89137350
+      startDate: 2024-10-21T14:00:00+01:00
+      endDate: 2024-10-21T14:30:00+01:00
+      customerEmail: john@example.com
+      customerName: John Doe
 
 security:
   - BearerAuth: []
@@ -76,8 +83,11 @@ paths:
       description: Create a booking based on a location and recieve the pincode for the session in return.
       operationId: createBooking
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/booking"
-     
+            examples:
+              $ref: "#/components/schemas/bookingExample"
+
