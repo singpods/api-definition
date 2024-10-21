@@ -25,7 +25,7 @@ components:
       type: http
       scheme: bearer
   schemas:
-    booking:
+    createBookingRequest:
       type: object
       properties:
         locationId:
@@ -46,13 +46,12 @@ components:
         customerName:
           type: string
           description: Name of the customer booking
-    bookingExample:
-      locationId: 54f11c47-9f7c-4891-9b9e-8ff1aaaa6d40
-      podId: 03dffc4f-182a-4826-956e-f2ba89137350
-      startDate: 2024-10-21T14:00:00+01:00
-      endDate: 2024-10-21T14:30:00+01:00
-      customerEmail: john@example.com
-      customerName: John Doe
+    createBookingResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 4 digit access code
 
 security:
   - BearerAuth: []
@@ -87,7 +86,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/booking"
+              $ref: "#/components/schemas/createBookingRequest"
             examples:
-              $ref: "#/components/schemas/bookingExample"
+              Successful:
+                summary: Lorem Ipsum
+                value: {
+                  "locationId": "54f11c47-9f7c-4891-9b9e-8ff1aaaa6d40",
+                  "podId": "3dffc4f-182a-4826-956e-f2ba89137350",
+                  "startDate": "2024-10-21T14:00:00+01:00",
+                  "endDate": "2024-10-21T14:30:00+01:00",
+                  "customerEmail": "john@example.com",
+                  "customerName": "John Doe"
+                }
+      responses:
+        "200":
+          description: All went well
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createBookingResponse"
+        "404":
+          description: Post not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+
 
