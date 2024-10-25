@@ -65,18 +65,6 @@ paths:
       summary: Returns all rentors locations
       description: Get all singpod locations available for the authenticated rentor.
       operationId: getLocations
-  "/locations/{id}":
-    get:
-      tags: ["locations"]
-      summary: Returns location by given ID
-      description: Get a single singpod location available for the authenticated rentor, based on the id given.
-      operationId: getLocation
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         "200":
           description: A list of location details
@@ -181,6 +169,117 @@ paths:
                     statistics_disable:
                       type: boolean
                       example: false
+  "/locations/{id}":
+    get:
+      tags: ["locations"]
+      summary: Returns location by given ID
+      description: Get a single singpod location available for the authenticated rentor, based on the id given.
+      operationId: getLocation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Details of a single location
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: b266da4d-95cd-4547-a787-a8c3b54803a8
+                  head_image:
+                    type: string
+                    format: uri
+                    example: "https://sing-pods-images.s3.amazonaws.com/61cc7337-ea1b-4542-972e-0c7c7c836dcd-sp%20logo%20icon.png"
+                  logo:
+                    type: string
+                    format: uri
+                    example: "https://sing-pods-images.s3.amazonaws.com/c385c9e0-8bf9-4b95-b91c-c2f67ff2e378-Icon%20pink%402x.png"
+                  name:
+                    type: string
+                    example: SingPods - Gamechangers
+                  city:
+                    type: string
+                    example: London
+                  canvas_album_id:
+                    type: string
+                    format: uuid
+                    example: 50934958-7d63-4857-9c98-33af82d881dc
+                  location:
+                    type: string
+                    example: The Lighthouse
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: "2024-03-26T16:24:27.455Z"
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: "2024-05-09T09:49:31.091Z"
+                  booking_interval:
+                    type: integer
+                    description: Interval in milliseconds for booking
+                    example: 900000
+                  session_interval:
+                    type: integer
+                    description: Interval in milliseconds for session
+                    example: 1800000
+                  price_for_interval_in_gbp:
+                    type: number
+                    format: float
+                    example: 1
+                  price_for_person_in_gbp:
+                    type: number
+                    format: float
+                    example: 1
+                  price_per_song_in_gbp:
+                    type: number
+                    format: float
+                    example: 5
+                  price_per_mic_in_gbp:
+                    type: number
+                    format: float
+                    example: 10
+                  is_per_song_enabled:
+                    type: boolean
+                    example: false
+                  is_per_mic_enabled:
+                    type: boolean
+                    example: false
+                  persons_select:
+                    type: boolean
+                    example: true
+                  rentorId:
+                    type: string
+                    format: uuid
+                    example: 9d0b93dd-32d9-45f8-b2ec-e612af036b64
+                  timezone:
+                    type: string
+                    example: "Europe/London"
+                  showQr:
+                    type: boolean
+                    example: false
+                  alias:
+                    type: string
+                    example: singpods-game
+                  published:
+                    type: boolean
+                    example: true
+                  triggers_disable:
+                    type: boolean
+                    example: false
+                  genres_disable:
+                    type: boolean
+                    example: false
+                  statistics_disable:
+                    type: boolean
+                    example: false
   "/locations/{locationId}/pods":
     get:
       tags: ["location-pods"]
