@@ -12,6 +12,8 @@ info:
 tags:
   - name: locations
     description: Location operations
+  - name: location-pods
+    description: Location pod operations
   - name: bookings
     description: Booking operations
 
@@ -41,7 +43,7 @@ components:
           type: string
           description: "Datetime to start the session [format: ISO 8601]"
         customerEmail:
-          type: string
+          type: ['null', string]
           description: Email of the customer booking
         customerName:
           type: string
@@ -66,11 +68,23 @@ paths:
   "/locations/{id}":
     get:
       tags: ["locations"]
-      summary: Returns location by give ID
+      summary: Returns location by given ID
       description: Get a single singpod location available for the authenticated rentor, based on the id given.
       operationId: getLocation
       parameters:
         - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+  "/locations/{locationId}/pods":
+    get:
+      tags: ["location-pods"]
+      summary: Returns location pods by given locationId
+      description: Get a list of pods available at the given location ID
+      operationId: getLocationPods
+      parameters:
+        - name: locationId
           in: path
           required: true
           schema:
@@ -105,12 +119,5 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/createBookingResponse"
-        "404":
-          description: Post not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties: {}
 
 
