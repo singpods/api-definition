@@ -76,7 +76,111 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+      responses:
+        "200":
+          description: A list of location details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: ecf6fcfd-afc1-453c-ad9e-19ae63e68590
+                    head_image:
+                      type: string
+                      format: uri
+                      nullable: true
+                      example: null
+                    logo:
+                      type: string
+                      format: uri
+                      nullable: true
+                      example: null
+                    name:
+                      type: string
+                      example: Test location
+                    city:
+                      type: string
+                      example: London
+                    canvas_album_id:
+                      type: string
+                      format: uuid
+                      nullable: true
+                      example: null
+                    location:
+                      type: string
+                      example: Location name
+                    created_at:
+                      type: string
+                      format: date-time
+                      example: "2024-07-31T07:50:32.238Z"
+                    updated_at:
+                      type: string
+                      format: date-time
+                      example: "2024-09-19T12:47:56.339Z"
+                    booking_interval:
+                      type: integer
+                      description: Interval in milliseconds for booking
+                      example: 1800000
+                    session_interval:
+                      type: integer
+                      description: Interval in milliseconds for session
+                      example: 1800000
+                    price_for_interval_in_gbp:
+                      type: number
+                      format: float
+                      example: 30
+                    price_for_person_in_gbp:
+                      type: number
+                      format: float
+                      example: 15
+                    price_per_song_in_gbp:
+                      type: number
+                      format: float
+                      example: 5
+                    price_per_mic_in_gbp:
+                      type: number
+                      format: float
+                      example: 10
+                    is_per_song_enabled:
+                      type: boolean
+                      example: false
+                    is_per_mic_enabled:
+                      type: boolean
+                      example: false
+                    persons_select:
+                      type: boolean
+                      example: false
+                    rentorId:
+                      type: string
+                      format: uuid
+                      example: 9d0b93dd-32d9-45f8-b2ec-e612af036b64
+                    timezone:
+                      type: string
+                      example: "Europe/London"
+                    showQr:
+                      type: boolean
+                      example: true
+                    alias:
+                      type: string
+                      example: test
+                    published:
+                      type: boolean
+                      example: true
+                    triggers_disable:
+                      type: boolean
+                      example: true
+                    genres_disable:
+                      type: boolean
+                      example: false
+                    statistics_disable:
+                      type: boolean
+                      example: false
   "/locations/{locationId}/pods":
     get:
       tags: ["location-pods"]
@@ -88,7 +192,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
   "/bookings":
     post:
       tags: ["bookings"]
