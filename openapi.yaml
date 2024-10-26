@@ -283,8 +283,8 @@ paths:
   "/locations/{locationId}/pods":
     get:
       tags: ["location-pods"]
-      summary: Returns location pods by given locationId
-      description: Get a list of pods available at the given location ID
+      summary: Returns location pods by given locationId and bookings
+      description: Get a list of pods available at the given location ID along with already booked customers
       operationId: getLocationPods
       parameters:
         - name: locationId
@@ -294,7 +294,7 @@ paths:
             type: string
       responses:
         "200":
-          description: Details of pods and associated users
+          description: Details of pods and associated bookings
           content:
             application/json:
               schema:
