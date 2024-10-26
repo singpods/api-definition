@@ -292,6 +292,71 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        "200":
+          description: Details of pods and associated users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pods:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: SingPods - A
+                        id:
+                          type: string
+                          format: uuid
+                          example: 3bb68d28-c5c0-4da8-b0b3-50b422a22fb8
+                        users:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 426
+                              startDate:
+                                type: string
+                                format: date-time
+                                example: "2024-10-26T09:00:00.000Z"
+                              endDate:
+                                type: string
+                                format: date-time
+                                example: "2024-10-26T09:30:00.000Z"
+                              username:
+                                type: string
+                                example: John
+                              email:
+                                type: string
+                                example: "+447833385999"
+                              persons:
+                                type: integer
+                                example: 1
+                              mics:
+                                type: integer
+                                example: 0
+                              songs:
+                                type: integer
+                                example: 0
+                              assignedBy:
+                                type: string
+                                example: VENUE_ADMIN
+                              note:
+                                type: string
+                                nullable: true
+                                example: null
+                  totalPages:
+                    type: integer
+                    example: 1
+                  totalItems:
+                    type: integer
+                    example: 1
+
   "/bookings":
     post:
       tags: ["bookings"]
