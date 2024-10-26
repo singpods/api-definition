@@ -295,6 +295,7 @@ paths:
         - name: date
           in: query
           required: true
+          description: Date string used to filter the results to the pods available on a particular date
           schema:
             type: string
       responses:
