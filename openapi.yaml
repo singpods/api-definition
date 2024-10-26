@@ -292,6 +292,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Details of pods and associated bookings
