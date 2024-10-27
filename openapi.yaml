@@ -320,7 +320,7 @@ paths:
                           type: string
                           format: uuid
                           example: 3bb68d28-c5c0-4da8-b0b3-50b422a22fb8
-                        users:
+                        bookings:
                           type: array
                           items:
                             type: object
