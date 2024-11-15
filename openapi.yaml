@@ -50,6 +50,15 @@ components:
         customerName:
           type: string
           description: Name of the customer booking
+        amount:
+          type: integer
+          description: Price of the booking in integer penny value e.g. £10 should be depicted as 1000
+    cancelBookingRequest:
+      type: object
+      properties:
+        pinCode:
+          type: integer
+          description: The pin code given for the session
     createBookingResponse:
       type: object
       properties:
@@ -386,7 +395,8 @@ paths:
                   "startDate": "2024-10-21T14:00:00+01:00",
                   "endDate": "2024-10-21T14:30:00+01:00",
                   "customerEmail": "john@example.com",
-                  "customerName": "John Doe"
+                  "customerName": "John Doe",
+                  "amount": 1000
                 }
       responses:
         "200":
@@ -395,5 +405,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/createBookingResponse"
+    delete:
+      tags: ["bookings"]
+      summary: Cancel a booking
+      description: Cancel a booking based on the pincode given for entry.
+      operationId: cancelBooking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/cancelBookingRequest"
+            examples:
+              Successful:
+                summary: Successful Request
+                value: {
+                  "pinCode": 12345,
+                }
+      responses:
+        "204":
+          description: All went well
 
 
