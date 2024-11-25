@@ -3,7 +3,7 @@ openapi: 3.1.0
 info:
   title: Singpods Ops API BETA
   description: Proxy API for external integrations to the Singpods ecosystem.
-  version: 0.1.0
+  version: 0.2.0
   contact:
     name: Singpods
     url: https://www.singpods.com/
