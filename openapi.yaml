@@ -16,11 +16,13 @@ tags:
     description: Location pod operations
   - name: bookings
     description: Booking operations
+  - name: reservations
+    description: Reservation operations (two-step booking flow)
 
 servers:
-  - url: https://staging-connect.singpods.com/api/0.1.0
+  - url: https://staging-connect.singpods.com/api/0.2.0
     description: Singpods Staging API
-  - url: https://connect.singpods.com/api/0.1.0
+  - url: https://connect.singpods.com/api/0.2.0
     description: Singpods Production API
 
 components:
@@ -29,30 +31,98 @@ components:
       type: http
       scheme: bearer
   schemas:
-    createBookingRequest:
+    createReservationRequest:
       type: object
+      required:
+        - locationId
+        - podId
+        - startDate
+        - endDate
+        - customerName
+        - notificationType
+        - amount
       properties:
         locationId:
           type: string
+          format: uuid
           description: ID of the location
         podId:
           type: string
+          format: uuid
           description: ID of the pod
         startDate:
           type: string
+          format: date-time
           description: "Datetime to start the session [format: ISO 8601]"
         endDate:
           type: string
-          description: "Datetime to start the session [format: ISO 8601]"
-        customerEmail:
-          type: ['null', string]
-          description: Email of the customer booking
+          format: date-time
+          description: "Datetime to end the session [format: ISO 8601]"
         customerName:
           type: string
           description: Name of the customer booking
+        customerEmail:
+          type: ['null', string]
+          format: email
+          description: Email of the customer (required if notificationType is 'email')
+        customerPhone:
+          type: ['null', string]
+          description: Phone number of the customer (required if notificationType is 'phone')
+        notificationType:
+          type: string
+          enum: [email, phone]
+          description: How to notify the customer of their booking code
         amount:
           type: integer
+          minimum: 0
           description: Price of the booking in integer penny value e.g. £10 should be depicted as 1000
+        personAmount:
+          type: integer
+          minimum: 1
+          default: 1
+          description: Number of people for the session
+        songsAmount:
+          type: integer
+          minimum: 1
+          default: 1
+          description: Number of songs for the session
+        micsAmount:
+          type: integer
+          minimum: 1
+          default: 1
+          description: Number of microphones for the session
+    reservationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the reservation
+        state:
+          type: string
+          enum: [pending, confirmed, expired, cancelled, failed]
+          description: Current state of the reservation
+        booking_code:
+          type: ['null', string]
+          description: The access code for the session (only present after confirmation)
+        expires_at:
+          type: ['null', string]
+          format: date-time
+          description: When the reservation expires if not confirmed (ISO 8601)
+        session_start:
+          type: string
+          format: date-time
+          description: Datetime when the session starts (ISO 8601)
+        session_end:
+          type: string
+          format: date-time
+          description: Datetime when the session ends (ISO 8601)
+    errorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message describing what went wrong
     cancelBookingRequest:
       type: object
       properties:
@@ -374,37 +444,188 @@ paths:
                     type: integer
                     example: 1
 
-  "/bookings":
+  "/reservations":
     post:
-      tags: ["bookings"]
-      summary: Create a booking
-      description: Create a booking based on a location and recieve the pincode for the session in return.
-      operationId: createBooking
+      tags: ["reservations"]
+      summary: Create a reservation
+      description: |
+        Creates a temporary reservation that must be confirmed within 1 minute.
+        This is the first step in the two-step booking flow. After creating a reservation,
+        use the confirm endpoint to finalize the booking and receive the access code.
+      operationId: createReservation
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/createBookingRequest"
+              $ref: "#/components/schemas/createReservationRequest"
             examples:
-              Successful:
-                summary: Successful Request
-                value: {
-                  "locationId": "54f11c47-9f7c-4891-9b9e-8ff1aaaa6d40",
-                  "podId": "3dffc4f-182a-4826-956e-f2ba89137350",
-                  "startDate": "2024-10-21T14:00:00+01:00",
-                  "endDate": "2024-10-21T14:30:00+01:00",
-                  "customerEmail": "john@example.com",
-                  "customerName": "John Doe",
-                  "amount": 1000
-                }
+              EmailNotification:
+                summary: Reservation with email notification
+                value:
+                  locationId: "54f11c47-9f7c-4891-9b9e-8ff1aaaa6d40"
+                  podId: "3dffc4f-182a-4826-956e-f2ba89137350"
+                  startDate: "2024-10-21T14:00:00+01:00"
+                  endDate: "2024-10-21T14:30:00+01:00"
+                  customerName: "John Doe"
+                  customerEmail: "john@example.com"
+                  notificationType: "email"
+                  amount: 1000
+              PhoneNotification:
+                summary: Reservation with phone notification
+                value:
+                  locationId: "54f11c47-9f7c-4891-9b9e-8ff1aaaa6d40"
+                  podId: "3dffc4f-182a-4826-956e-f2ba89137350"
+                  startDate: "2024-10-21T14:00:00+01:00"
+                  endDate: "2024-10-21T14:30:00+01:00"
+                  customerName: "John Doe"
+                  customerPhone: "+447833385999"
+                  notificationType: "phone"
+                  amount: 1000
+                  personAmount: 2
+                  songsAmount: 5
+                  micsAmount: 2
       responses:
-        "200":
-          description: All went well
+        "201":
+          description: Reservation created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createBookingResponse"
+                $ref: "#/components/schemas/reservationResponse"
+              example:
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                state: "pending"
+                booking_code: null
+                expires_at: "2024-10-21T13:15:00+01:00"
+                session_start: "2024-10-21T14:00:00+01:00"
+                session_end: "2024-10-21T14:30:00+01:00"
+        "401":
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+              example:
+                error: "Unauthorized"
+        "404":
+          description: Location or pod not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+              example:
+                error: "Resource not found"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+              example:
+                message: "The given data was invalid."
+                errors:
+                  notificationType: ["The notification type field is required."]
+        "502":
+          description: Upstream service error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+              example:
+                error: "Upstream service error"
+
+  "/reservations/{id}/confirm":
+    post:
+      tags: ["reservations"]
+      summary: Confirm a reservation
+      description: |
+        Confirms a pending reservation and returns the booking access code.
+        The reservation must be confirmed before it expires (1 minute after creation).
+      operationId: confirmReservation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the reservation to confirm
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Reservation confirmed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/reservationResponse"
+              example:
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                state: "confirmed"
+                booking_code: "12345"
+                expires_at: "2024-10-21T13:15:00+01:00"
+                session_start: "2024-10-21T14:00:00+01:00"
+                session_end: "2024-10-21T14:30:00+01:00"
+        "401":
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+              example:
+                error: "Unauthorized"
+        "404":
+          description: Reservation not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+              example:
+                error: "Reservation not found"
+        "409":
+          description: Conflict - Reservation already confirmed, cancelled, or failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+              examples:
+                AlreadyConfirmed:
+                  summary: Reservation already confirmed
+                  value:
+                    error: "Reservation already confirmed"
+                Cancelled:
+                  summary: Reservation was cancelled
+                  value:
+                    error: "Reservation was cancelled"
+                Failed:
+                  summary: Reservation failed
+                  value:
+                    error: "Reservation failed"
+        "410":
+          description: Gone - Reservation has expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+              example:
+                error: "Reservation has expired"
+        "502":
+          description: Upstream service error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+              example:
+                error: "Upstream service error"
+
+  "/bookings":
     delete:
       tags: ["bookings"]
       summary: Cancel a booking
@@ -419,11 +640,8 @@ paths:
             examples:
               Successful:
                 summary: Successful Request
-                value: {
-                  "pinCode": 12345,
-                }
+                value:
+                  pinCode: 12345
       responses:
         "204":
           description: All went well
-
-
